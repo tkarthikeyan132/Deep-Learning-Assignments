@@ -62,32 +62,29 @@ Slot attention is a mechanism that maps from a set of N input feature vectors to
 
 #### Steps to Implement Slot Attention:
 1. **Input Image Encoding**:
-    - Given an image \( x \in \mathbb{R}^{H \times W \times 3} \), a CNN encoder \( E \) gives feature maps \( E(x) = z \in \mathbb{R}^{\sqrt{N} \times \sqrt{N} \times D_{\text{inputs}}} \).
-    - A 2D positional encoding \( P \in \mathbb{R}^{\sqrt{N} \times \sqrt{N} \times D_{\text{inputs}}} \) is added to \( z \), resulting in \( z' = z + P \).
-    - Flatten \( z' \) spatially to get N input vectors and pass them through an MLP to get the final inputs \( \text{inputs} \in \mathbb{R}^{N \times D_{\text{inputs}}} \).
+    - Given an image, a CNN encoder extracts feature maps from the image.
+    - A 2D positional encoding is added to the feature maps.
+    - Flatten the enhanced feature maps spatially to get input vectors and pass them through an MLP to get the final inputs.
 
 2. **Slot Initialization**:
-    - Initialize K slot vectors \( \text{slots} \in \mathbb{R}^{K \times D_{\text{slots}}} \) by sampling from a normal distribution \( N(\mu, \text{diag}(\sigma)) \), where \( \mu \) and \( \sigma \) are learnable.
+    - Initialize slot vectors by sampling from a learnable normal distribution.
 
 3. **Iterative Attention**:
-    - Slots attend to inputs iteratively for T times and update slots at the end of each iteration.
+    - Slots attend to inputs iteratively for a set number of times and update slots at the end of each iteration.
 
 4. **Decoding**:
-    - Each of the K vectors from slots is decoded with the Spatial Broadcast Decoder [9] to produce a 4-channeled image \( \text{output}_i = D(\text{slots}[i]) \).
-    - Generate K masks by taking softmax for each pixel of the first channel across slots.
-    - The final reconstructed image \( \hat{x} \) is obtained by combining the masks and the content channels:
-      \[
-      \hat{x} = \sum_{i=1}^{K} \text{masks}_i \cdot \text{content}_i
-      \]
-    - Compute the image reconstruction loss \( L(\theta) \) over a batch of size B.
+    - Each of the slot vectors is decoded with the Spatial Broadcast Decoder to produce a multi-channeled image.
+    - Generate masks by taking softmax for each pixel of the first channel across slots.
+    - The final reconstructed image is obtained by combining the masks and the content channels.
+    - Compute the image reconstruction loss over a batch.
 
 ### 2. Experiments
 - **Dataset**: Sub-sampled CLEVRTex dataset.
-- **Hyperparameters**: Use number of slots \( K = 11 \).
+- **Hyperparameters**: Use 11 slots for this experiment.
 - **Tasks**:
     - Report the Adjusted Rand Index (ARI) score between the ground-truth and predicted object segmentation masks on the validation split.
     - Plot the train and validation image reconstruction loss vs epochs.
-    - **Compositional Generation**: Create a slot library using the training data, apply K-means clustering, sample new slots to generate images, and report the clean-FID [4] metric using validation images as ground truth.
+    - **Compositional Generation**: Create a slot library using the training data, apply K-means clustering, sample new slots to generate images, and report the clean-FID metric using validation images as ground truth.
 
 ## Assignment 2B: Slot Learning using Diffusion based Decoder
 
@@ -96,11 +93,11 @@ Diffusion models are generative models that learn the data distribution through 
 
 ### 2. Implementation
 1. **Slot Encoder**:
-    - Same as Part 2A, encoding images into slots using a CNN-based encoder and slot attention module.
+    - Same as in Part 2A, encoding images into slots using a CNN-based encoder and slot attention module.
 
 2. **Diffusion Decoder**:
-    - Train a conditional diffusion model to generate latent \( \hat{z} \) given slots.
-    - **Forward Process**: Gradually corrupt training latents \( z \) with Gaussian noise.
+    - Train a conditional diffusion model to generate latent representations given slots.
+    - **Forward Process**: Gradually corrupt training latents with Gaussian noise.
     - **Reverse Process**: Denoise the corrupted latents iteratively using a modified UNet architecture.
 
 #### Components:
@@ -108,7 +105,7 @@ Diffusion models are generative models that learn the data distribution through 
 - **Transformer Block**: Cross attention with slots added to UNet for conditioning.
 
 #### Decoding (Generation):
-- Implement Ancestral Sampling to iteratively denoise from \( z_0 \) to \( z_T \).
+- Implement Ancestral Sampling to iteratively denoise from the initial noise to the final latent representation.
 
 ### 3. Experiments
 - Repeat experiments from Part 2A on the same dataset.

@@ -137,4 +137,4 @@ rec_images = vae.decode(z)
 
 ## Acknowledgement
 
-A special thanks to [Prof. Parag Singla](https://www.cse.iitd.ac.in/~parags/teaching.html) for offering the machine learning course during the academic year 2023-24 at the Indian Institute of Technology (IIT) Delhi. The content of these assignments is inspired by the course lectures and materials provided during the tenure of this course.
+A special thanks to [Prof. Parag Singla](https://www.cse.iitd.ac.in/~parags/teaching.html) for offering the deep learning course during the academic year 2023-24 at the Indian Institute of Technology (IIT) Delhi. The content of these assignments is inspired by the course lectures and materials provided during the tenure of this course.
